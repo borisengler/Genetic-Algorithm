@@ -2,7 +2,7 @@ import random
 from Cities import *
 import Globals
 
-
+# this class is used for finding best salesman and for managing population
 class Population:
     def __init__(self, cities):
         self.pop = []
@@ -11,10 +11,6 @@ class Population:
         self.new_pop = []
         self.best = Salesman()
         self.best.steps = []
-
-    def pass_best(self):
-        index = random.randint(5, Globals.number_of_salesmen-5)
-        self.pop[index] = self.best
 
 
     def calculate_distances(self):
@@ -26,6 +22,7 @@ class Population:
                 cityB = self.cities[indexB]
                 salesman.distance += cityA.calculate_distance(cityB)
 
+    # fitness funciton - important for giving the best ones bigger chance to propagate to next generation
     def calculate_fitness(self):
         min_distance = min([salesman.distance for salesman in self.pop])
 
@@ -41,7 +38,7 @@ class Population:
             for i in range(salesman.fitness):
                 self.mating_pool.append(salesman)
 
-
+    # creates new generation from current generation (combining 2 "parents" into one child)
     def mate(self):
         best_before = Salesman()
         best_before.steps = (self.best.steps).copy()
@@ -66,8 +63,7 @@ class Population:
 
 
 
-
-
+# class representing single salesman
 class Salesman:
 
     def __init__(self):
@@ -77,12 +73,12 @@ class Salesman:
         self.fitness = 0
         if self.steps == []:
             self.steps = [i for i in range(1, self.cities)]
-
             random.shuffle(self.steps)
             self.steps.append(0)
             self.steps[0], self.steps[-1] = self.steps[-1], self.steps[0]
             self.steps.append(0)
 
+    #  returns new salesman created with information from both "parents"
     def crossover(self, partner):
         new_steps = [0]
 
@@ -114,6 +110,8 @@ class Salesman:
         new_steps.append(0)
         return new_steps
 
+
+    # apply random mutation change
     def mutate(self):
         for i in range(1, len(self.steps)-1):
             rand = random.random()
